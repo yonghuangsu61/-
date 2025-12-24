@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多维度对账查询 - 期权对账系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-links a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .filter-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        /* Filter Grid */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-select {
+            cursor: pointer;
+        }
+
+        /* Multi-Select */
+        .multi-select-container {
+            position: relative;
+        }
+
+        .multi-select-display {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            min-height: 42px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .multi-select-display:hover {
+            border-color: #667eea;
+        }
+
+        .multi-select-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .multi-select-tag .remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .multi-select-dropdown.show {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .multi-select-option:hover {
+            background: #f7fafc;
+        }
+
+        .multi-select-option.selected {
+            background: #e6efff;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        /* View Options */
+        .view-options {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 20px 0;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #4a5568;
+            cursor: pointer;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .results-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .results-summary {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .summary-item .count {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #718096;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7fafc;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 13px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #edf2f7;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #2d3748;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        tr.break-row {
+            background: #fff5f5;
+        }
+
+        tr.break-row:hover {
+            background: #fed7d7;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.matched {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-badge.break {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .status-badge.pending {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .action-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .pagination-info {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Summary View */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .summary-card h4 {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .summary-card .breakdown {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .summary-card .breakdown .success {
+            color: #38a169;
+        }
+
+        .summary-card .breakdown .error {
+            color: #e53e3e;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 多维度对账查询</h1>
+            <div class="nav-links">
+                <a href="index.html">Dashboard</a>
+                <a href="reconciliation.html" class="active">对账查询</a>
+                <a href="break-analysis.html">Break分析</a>
+                <a href="history.html">历史记录</a>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div class="filter-panel">
+            <div class="filter-header">
+                <div class="filter-title">📋 查询条件</div>
+                <div class="filter-actions">
+                    <button class="btn btn-secondary" onclick="resetFilters()">重置</button>
+                    <button class="btn btn-primary" onclick="applyFilters()">查询</button>
+                </div>
+            </div>
+
+            <div class="filter-grid">
+                <!-- Date Range -->
+                <div class="filter-group">
+                    <label class="filter-label">日期</label>
+                    <input type="date" class="filter-input" id="filterDate" value="">
+                </div>
+
+                <!-- Main Account -->
+                <div class="filter-group">
+                    <label class="filter-label">大账户</label>
+                    <div class="multi-select-container">
+                        <div class="multi-select-display" onclick="toggleDropdown('account')">
+                            <div id="accountTags"></div>
+                        </div>
+                        <div class="multi-select-dropdown" id="accountDropdown">
+                            <div class="multi-select-option" onclick="selectOption('account', '账户1')">账户1</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户2')">账户2</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户3')">账户3</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户4')">账户4</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户5')">账户5</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户6')">账户6</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户7')">账户7</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户8')">账户8</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户9')">账户9</div>
+                            <div class="multi-select-option" onclick="selectOption('account', '账户10')">账户10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub Account -->
+                <div class="filter-group">
+                    <label class="filter-label">子账户</label>
+                    <select class="filter-select" id="filterSubAccount">
+                        <option value="">全部</option>
+                        <option value="L">L (Long)</option>
+                        <option value="S">S (Short)</option>
+                    </select>
+                </div>
+
+                <!-- Option Symbol -->
+                <div class="filter-group">
+                    <label class="filter-label">期权标的（Option Symbol）</label>
+                    <input type="text" class="filter-input" id="filterSymbol" placeholder="如: AAPL 251226 127.00 CALL">
+                </div>
+
+                <!-- Option Series -->
+                <div class="filter-group">
+                    <label class="filter-label">期权系列（Option Series）</label>
+                    <input type="text" class="filter-input" id="filterSeries" placeholder="输入期权系列">
+                </div>
+
+                <!-- Position Type -->
+                <div class="filter-group">
+                    <label class="filter-label">持仓类型</label>
+                    <div class="multi-select-container">
+                        <div class="multi-select-display" onclick="toggleDropdown('position')">
+                            <div id="positionTags"></div>
+                        </div>
+                        <div class="multi-select-dropdown" id="positionDropdown">
+                            <div class="multi-select-option" onclick="selectOption('position', 'Long Call')">Long Call</div>
+                            <div class="multi-select-option" onclick="selectOption('position', 'Long Put')">Long Put</div>
+                            <div class="multi-select-option" onclick="selectOption('position', 'Short Call')">Short Call</div>
+                            <div class="multi-select-option" onclick="selectOption('position', 'Short Put')">Short Put</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise Type -->
+                <div class="filter-group">
+                    <label class="filter-label">交割类型</label>
+                    <select class="filter-select" id="filterExercise">
+                        <option value="">全部</option>
+                        <option value="exercise">Exercise</option>
+                        <option value="expiration">Expiration</option>
+                        <option value="assignment">Assignment</option>
+                    </select>
+                </div>
+
+                <!-- Delivery Type -->
+                <div class="filter-group">
+                    <label class="filter-label">交割物</label>
+                    <select class="filter-select" id="filterDelivery">
+                        <option value="">全部</option>
+                        <option value="cash">Cash</option>
+                        <option value="physical-buy">Physical (买入)</option>
+                        <option value="physical-sell">Physical (卖出)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="view-options">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showBreakOnly">
+                    <label for="showBreakOnly">仅显示Break数据</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showSummary">
+                    <label for="showSummary">显示汇总数据</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel">
+            <div class="results-header">
+                <div class="results-title">查询结果</div>
+                <div class="results-summary">
+                    <div class="summary-item">
+                        总记录: <span class="count" id="totalCount">2,458</span>
+                    </div>
+                    <div class="summary-item">
+                        匹配: <span class="count" style="color: #38a169;">2,351</span>
+                    </div>
+                    <div class="summary-item">
+                        Break: <span class="count" style="color: #e53e3e;">107</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('detail')">明细数据</button>
+                <button class="tab" onclick="switchTab('summary')">汇总统计</button>
+            </div>
+
+            <!-- Detail View -->
+            <div id="detailView">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable">时间</th>
+                                <th class="sortable">大账户</th>
+                                <th class="sortable">子账户</th>
+                                <th>期权标的</th>
+                                <th>持仓类型</th>
+                                <th class="sortable">数量</th>
+                                <th class="sortable">价格</th>
+                                <th>交割类型</th>
+                                <th>交割物</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="break-row">
+                                <td>2024-12-24 10:23:15</td>
+                                <td>账户1</td>
+                                <td>L</td>
+                                <td>AAPL 251226 127.00 CALL</td>
+                                <td>Long Call</td>
+                                <td>100</td>
+                                <td>$2.45</td>
+                                <td>Exercise</td>
+                                <td>Physical (买入)</td>
+                                <td><span class="status-badge break">Break</span></td>
+                                <td><a href="break-analysis.html?id=1001" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 10:22:48</td>
+                                <td>账户1</td>
+                                <td>S</td>
+                                <td>AAPL 251226 130.00 CALL</td>
+                                <td>Short Call</td>
+                                <td>50</td>
+                                <td>$1.85</td>
+                                <td>Expiration</td>
+                                <td>Cash</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr class="break-row">
+                                <td>2024-12-24 10:18:42</td>
+                                <td>账户3</td>
+                                <td>S</td>
+                                <td>TSLA 251220 180.00 PUT</td>
+                                <td>Short Put</td>
+                                <td>75</td>
+                                <td>$3.20</td>
+                                <td>Assignment</td>
+                                <td>Physical (卖出)</td>
+                                <td><span class="status-badge break">Break</span></td>
+                                <td><a href="break-analysis.html?id=1002" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 10:15:33</td>
+                                <td>账户2</td>
+                                <td>L</td>
+                                <td>MSFT 251224 370.00 PUT</td>
+                                <td>Long Put</td>
+                                <td>120</td>
+                                <td>$4.15</td>
+                                <td>Exercise</td>
+                                <td>Cash</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 10:12:33</td>
+                                <td>账户5</td>
+                                <td>L</td>
+                                <td>NVDA 251227 425.00 CALL</td>
+                                <td>Long Call</td>
+                                <td>200</td>
+                                <td>$5.80</td>
+                                <td>Exercise</td>
+                                <td>Physical (买入)</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 10:08:21</td>
+                                <td>账户4</td>
+                                <td>S</td>
+                                <td>GOOGL 251230 135.00 CALL</td>
+                                <td>Short Call</td>
+                                <td>80</td>
+                                <td>$2.90</td>
+                                <td>Expiration</td>
+                                <td>Cash</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 10:05:15</td>
+                                <td>账户7</td>
+                                <td>L</td>
+                                <td>META 251223 330.00 PUT</td>
+                                <td>Long Put</td>
+                                <td>150</td>
+                                <td>$3.45</td>
+                                <td>Exercise</td>
+                                <td>Physical (卖出)</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr class="break-row">
+                                <td>2024-12-24 10:02:47</td>
+                                <td>账户6</td>
+                                <td>S</td>
+                                <td>AMZN 251229 145.00 CALL</td>
+                                <td>Short Call</td>
+                                <td>95</td>
+                                <td>$2.15</td>
+                                <td>Assignment</td>
+                                <td>Cash</td>
+                                <td><span class="status-badge break">Break</span></td>
+                                <td><a href="break-analysis.html?id=1006" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 09:58:31</td>
+                                <td>账户8</td>
+                                <td>L</td>
+                                <td>AMD 251222 115.00 PUT</td>
+                                <td>Long Put</td>
+                                <td>110</td>
+                                <td>$1.95</td>
+                                <td>Expiration</td>
+                                <td>Cash</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-24 09:55:12</td>
+                                <td>账户9</td>
+                                <td>S</td>
+                                <td>NFLX 251228 450.00 CALL</td>
+                                <td>Short Call</td>
+                                <td>60</td>
+                                <td>$4.25</td>
+                                <td>Exercise</td>
+                                <td>Physical (买入)</td>
+                                <td><span class="status-badge matched">已匹配</span></td>
+                                <td><a href="#" class="action-link">详情</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">
+                        显示 1-10 条，共 2,458 条记录
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="page-btn" disabled>‹</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">4</button>
+                        <button class="page-btn">5</button>
+                        <button class="page-btn">...</button>
+                        <button class="page-btn">246</button>
+                        <button class="page-btn">›</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary View (Hidden by default) -->
+            <div id="summaryView" style="display: none;">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h4>按大账户汇总</h4>
+                        <div class="value">10</div>
+                        <div class="breakdown">
+                            <span class="success">✓ 9个正常</span> / <span class="error">✗ 1个有Break</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>按持仓类型汇总</h4>
+                        <div class="value">4</div>
+                        <div class="breakdown">
+                            Long Call: 650 / Long Put: 580 / Short Call: 620 / Short Put: 608
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>按交割类型汇总</h4>
+                        <div class="value">3</div>
+                        <div class="breakdown">
+                            Exercise: 892 / Expiration: 785 / Assignment: 781
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>按交割物汇总</h4>
+                        <div class="value">3</div>
+                        <div class="breakdown">
+                            Cash: 1,245 / Physical买入: 603 / Physical卖出: 610
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>总交易金额</h4>
+                        <div class="value">$8.5M</div>
+                        <div class="breakdown">
+                            已匹配: $8.3M / Break: $0.2M
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Break率</h4>
+                        <div class="value">4.35%</div>
+                        <div class="breakdown">
+                            107个Break / 2,458条总记录
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date as default
+        document.getElementById('filterDate').valueAsDate = new Date();
+
+        // Multi-select functionality
+        const selections = {
+            account: [],
+            position: []
+        };
+
+        function toggleDropdown(type) {
+            const dropdown = document.getElementById(type + 'Dropdown');
+            dropdown.classList.toggle('show');
+            
+            // Close other dropdowns
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => {
+                if (d.id !== type + 'Dropdown') {
+                    d.classList.remove('show');
+                }
+            });
+        }
+
+        function selectOption(type, value) {
+            const index = selections[type].indexOf(value);
+            if (index > -1) {
+                selections[type].splice(index, 1);
+            } else {
+                selections[type].push(value);
+            }
+            updateTags(type);
+            updateDropdownUI(type);
+        }
+
+        function updateTags(type) {
+            const container = document.getElementById(type + 'Tags');
+            container.innerHTML = '';
+            
+            if (selections[type].length === 0) {
+                container.innerHTML = '<span style="color: #a0aec0;">请选择...</span>';
+                return;
+            }
+            
+            selections[type].forEach(value => {
+                const tag = document.createElement('span');
+                tag.className = 'multi-select-tag';
+                tag.innerHTML = `${value} <span class="remove" onclick="removeTag('${type}', '${value}')">×</span>`;
+                container.appendChild(tag);
+            });
+        }
+
+        function removeTag(type, value) {
+            const index = selections[type].indexOf(value);
+            if (index > -1) {
+                selections[type].splice(index, 1);
+            }
+            updateTags(type);
+            updateDropdownUI(type);
+        }
+
+        function updateDropdownUI(type) {
+            const dropdown = document.getElementById(type + 'Dropdown');
+            const options = dropdown.querySelectorAll('.multi-select-option');
+            options.forEach(option => {
+                const text = option.textContent;
+                if (selections[type].includes(text)) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // Initialize empty state
+        updateTags('account');
+        updateTags('position');
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.multi-select-container')) {
+                document.querySelectorAll('.multi-select-dropdown').forEach(d => {
+                    d.classList.remove('show');
+                });
+            }
+        });
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'detail') {
+                document.getElementById('detailView').style.display = 'block';
+                document.getElementById('summaryView').style.display = 'none';
+            } else {
+                document.getElementById('detailView').style.display = 'none';
+                document.getElementById('summaryView').style.display = 'block';
+            }
+        }
+
+        // Filter functions
+        function applyFilters() {
+            console.log('Applying filters...');
+            // In real implementation, this would trigger API call with filter parameters
+            alert('查询已执行！实际应用中会调用后端API获取数据。');
+        }
+
+        function resetFilters() {
+            document.getElementById('filterDate').valueAsDate = new Date();
+            document.getElementById('filterSubAccount').value = '';
+            document.getElementById('filterSymbol').value = '';
+            document.getElementById('filterSeries').value = '';
+            document.getElementById('filterExercise').value = '';
+            document.getElementById('filterDelivery').value = '';
+            document.getElementById('showBreakOnly').checked = false;
+            document.getElementById('showSummary').checked = false;
+            
+            selections.account = [];
+            selections.position = [];
+            updateTags('account');
+            updateTags('position');
+        }
+    </script>
+</body>
+</html>

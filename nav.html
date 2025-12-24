@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期权对账系统 - 页面导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .nav-container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .page-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .page-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .page-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .page-desc {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .page-features {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .feature-item {
+            color: #4a5568;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <div class="header">
+            <h1>📊 期权对账系统</h1>
+            <p>Option Reconciliation Management System</p>
+        </div>
+
+        <div class="pages-grid">
+            <a href="index.html" class="page-card">
+                <span class="page-icon">🏠</span>
+                <div class="page-title">Dashboard 总览</div>
+                <div class="page-desc">系统主页，查看今日对账状态和快速入口</div>
+                <div class="page-features">
+                    <div class="feature-item">实时对账统计</div>
+                    <div class="feature-item">趋势图表展示</div>
+                    <div class="feature-item">最近Break记录</div>
+                </div>
+            </a>
+
+            <a href="reconciliation.html" class="page-card">
+                <span class="page-icon">🔍</span>
+                <div class="page-title">对账查询</div>
+                <div class="page-desc">多维度灵活查询对账结果和明细数据</div>
+                <div class="page-features">
+                    <div class="feature-item">10+维度筛选</div>
+                    <div class="feature-item">明细/汇总切换</div>
+                    <div class="feature-item">Break高亮显示</div>
+                </div>
+            </a>
+
+            <a href="break-analysis.html" class="page-card">
+                <span class="page-icon">⚠️</span>
+                <div class="page-title">Break分析</div>
+                <div class="page-desc">差异记录详细分析和处理跟进</div>
+                <div class="page-features">
+                    <div class="feature-item">差异对比展示</div>
+                    <div class="feature-item">处理状态跟踪</div>
+                    <div class="feature-item">备注和历史</div>
+                </div>
+            </a>
+
+            <a href="history.html" class="page-card">
+                <span class="page-icon">📅</span>
+                <div class="page-title">历史记录</div>
+                <div class="page-desc">历史对账记录查询和趋势分析</div>
+                <div class="page-features">
+                    <div class="feature-item">时间范围查询</div>
+                    <div class="feature-item">趋势可视化</div>
+                    <div class="feature-item">数据导出</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="info-section">
+            <div class="info-title">
+                <span>📋</span>
+                <span>系统功能特性</span>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">对账维度</div>
+                    <div class="info-value">10+ 维度</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">大账户</div>
+                    <div class="info-value">10 个账户</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">子账户类型</div>
+                    <div class="info-value">L / S</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">持仓类型</div>
+                    <div class="info-value">4 种类型</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">交割类型</div>
+                    <div class="info-value">3 种类型</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">交割物类型</div>
+                    <div class="info-value">3 种类型</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
