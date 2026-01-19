@@ -377,6 +377,97 @@
         font-weight: 600;
       }
 
+      .pivot-builder {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .pivot-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .pivot-header h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .pivot-body {
+        display: grid;
+        grid-template-columns: minmax(260px, 320px) 1fr;
+        gap: 16px;
+      }
+
+      .pivot-dimensions {
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px dashed var(--border);
+      }
+
+      .pivot-dimensions h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .pivot-drag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .pivot-drag span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .pivot-dimensions .chip {
+        cursor: grab;
+      }
+
+      .pivot-zones {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .pivot-zone {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px dashed var(--border);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 100px;
+      }
+
+      .pivot-zone strong {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .pivot-slot {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pivot-slot .chip {
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 600;
+      }
+
+      .pivot-preview {
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+
       .table {
         width: 100%;
         border-collapse: collapse;
@@ -753,6 +844,109 @@
                 <span class="chip">持仓类型</span>
                 <span class="chip">交割类型</span>
                 <span class="chip">交割物</span>
+              </div>
+            </div>
+
+            <div class="card pivot-builder">
+              <div class="pivot-header">
+                <div>
+                  <h3>透视对账配置（拖拉维度到行 / 列）</h3>
+                  <div class="muted">支持像 Excel 透视表一样自由组合维度，快速查看对账结果。</div>
+                </div>
+                <div class="segmented">
+                  <button class="active">透视视图</button>
+                  <button>明细视图</button>
+                </div>
+              </div>
+              <div class="pivot-body">
+                <div class="pivot-dimensions">
+                  <div class="pivot-drag">
+                    <strong>可用维度</strong>
+                    <span>拖动到右侧区域</span>
+                  </div>
+                  <div class="chips">
+                    <span class="chip">大账户</span>
+                    <span class="chip">子账户（L/S）</span>
+                    <span class="chip">到期状态</span>
+                    <span class="chip">Option Series</span>
+                    <span class="chip">Option Chain</span>
+                    <span class="chip">Option Symbol</span>
+                    <span class="chip">持仓类型</span>
+                    <span class="chip">交割类型</span>
+                    <span class="chip">交割物</span>
+                    <span class="chip">physical 价格</span>
+                    <span class="chip">physical 数量</span>
+                  </div>
+                </div>
+                <div class="pivot-zones">
+                  <div class="pivot-zone">
+                    <strong>行</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">大账户</span>
+                      <span class="chip">子账户</span>
+                      <span class="chip">到期状态</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>列</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">持仓类型</span>
+                      <span class="chip">交割类型</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>筛选</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">Option Symbol</span>
+                      <span class="chip">Option Series</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>值</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">上游数量</span>
+                      <span class="chip">客户持仓</span>
+                      <span class="chip">Break 数量</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pivot-preview">
+                <h3>透视预览</h3>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>行：大账户 / 子账户 / 到期状态</th>
+                      <th>列：持仓类型 / 交割类型</th>
+                      <th>上游数量</th>
+                      <th>客户持仓</th>
+                      <th>Break</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>大账户 3 / L / 未到期</td>
+                      <td>long call / exercise</td>
+                      <td>1,200</td>
+                      <td>1,180</td>
+                      <td><span class="status-pill danger">Break</span></td>
+                    </tr>
+                    <tr>
+                      <td>大账户 3 / L / 未到期</td>
+                      <td>short put / expiration</td>
+                      <td>620</td>
+                      <td>620</td>
+                      <td><span class="status-pill success">正常</span></td>
+                    </tr>
+                    <tr>
+                      <td>大账户 6 / S / 到期</td>
+                      <td>short call / assignment</td>
+                      <td>320</td>
+                      <td>300</td>
+                      <td><span class="status-pill danger">Break</span></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
