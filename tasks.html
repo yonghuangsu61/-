@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>任务处理情况</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-muted: #f1f4fb;
+        --text: #1c2333;
+        --muted: #5b667a;
+        --primary: #2f6fed;
+        --primary-strong: #2557b6;
+        --success: #1b7f5f;
+        --warning: #c26100;
+        --danger: #c43f3f;
+        --border: #d7deea;
+        --shadow: 0 12px 30px rgba(18, 28, 45, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      header nav a {
+        color: var(--muted);
+        text-decoration: none;
+        margin-right: 18px;
+        font-size: 14px;
+      }
+
+      header nav a:last-child {
+        margin-right: 0;
+      }
+
+      main {
+        padding: 24px 32px 60px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .card strong {
+        font-size: 22px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+
+      .tag.ok {
+        background: #e7f6ef;
+        color: var(--success);
+      }
+
+      .tag.warn {
+        background: #fff2e1;
+        color: var(--warning);
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel h3 {
+        margin: 0 0 14px;
+        font-size: 16px;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+
+      .step {
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      label {
+        font-size: 12px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      select,
+      input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 13px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        background: var(--surface-muted);
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .status.ready {
+        background: #e7f6ef;
+        color: var(--success);
+      }
+
+      .status.blocked {
+        background: #ffecec;
+        color: var(--danger);
+      }
+
+      .status.pending {
+        background: #fff2e1;
+        color: var(--warning);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .actions button {
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .actions button.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+
+      .actions button.primary:hover {
+        background: var(--primary-strong);
+      }
+
+      .insight-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+
+      .insight {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        background: #fff;
+      }
+
+      .insight ul {
+        padding-left: 18px;
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .badge {
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>任务处理情况</h1>
+        <nav>
+          <a href="./index.html">首页</a>
+          <a href="./reconciliation.html">对账页面</a>
+        </nav>
+      </div>
+      <span class="badge">数据日期：2026-01-19</span>
+    </header>
+
+    <main>
+      <section class="summary-grid">
+        <article class="card">
+          <h2>可处理任务</h2>
+          <strong>642</strong>
+          <span class="tag ok">对账一致</span>
+        </article>
+        <article class="card">
+          <h2>待定位异常</h2>
+          <strong>86</strong>
+          <span class="tag warn">对账不一致</span>
+        </article>
+        <article class="card">
+          <h2>处理中任务</h2>
+          <strong>210</strong>
+          <span class="tag ok">并行执行</span>
+        </article>
+        <article class="card">
+          <h2>已重建任务</h2>
+          <strong>34</strong>
+          <span class="tag warn">等待复核</span>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h3>任务处理流程</h3>
+        <div class="flow">
+          <div class="step">
+            <strong>1. 对账完成</strong>
+            对账一致 → 任务可处理；对账不一致 → 进入异常定位队列。
+          </div>
+          <div class="step">
+            <strong>2. 异常定位</strong>
+            分析 break 原因，定位上游账单、持仓数据或交割信息不一致。
+          </div>
+          <div class="step">
+            <strong>3. 任务重建</strong>
+            删除已有任务，按更新后的数据重新创建新任务，保证对账一致。
+          </div>
+          <div class="step">
+            <strong>4. 先行处理</strong>
+            对账一致的任务独立处理，不受异常任务影响。
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>任务列表</h3>
+        <div class="filters">
+          <div>
+            <label for="status">任务状态</label>
+            <select id="status">
+              <option value="all">全部</option>
+              <option>可处理</option>
+              <option>异常</option>
+              <option>处理中</option>
+              <option>已完成</option>
+            </select>
+          </div>
+          <div>
+            <label for="account">大账户</label>
+            <select id="account">
+              <option value="all">全部</option>
+              <option>大账户 1</option>
+              <option>大账户 2</option>
+              <option>大账户 3</option>
+            </select>
+          </div>
+          <div>
+            <label for="keyword">关键字</label>
+            <input id="keyword" type="text" placeholder="输入任务ID / option symbol" />
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>任务ID</th>
+              <th>大账户 / 子账户</th>
+              <th>option symbol</th>
+              <th>对账状态</th>
+              <th>任务状态</th>
+              <th>处理动作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TSK-20260119-001</td>
+              <td>大账户 1 / L</td>
+              <td>AAPL 251226 127.00 CALL</td>
+              <td><span class="status ready">一致</span></td>
+              <td><span class="status ready">可处理</span></td>
+              <td class="actions">
+                <button class="primary">开始处理</button>
+                <button>查看详情</button>
+              </td>
+            </tr>
+            <tr>
+              <td>TSK-20260119-014</td>
+              <td>大账户 1 / S</td>
+              <td>AAPL 251226 120.00 PUT</td>
+              <td><span class="status blocked">break</span></td>
+              <td><span class="status blocked">异常</span></td>
+              <td class="actions">
+                <button>定位原因</button>
+                <button>删除任务</button>
+                <button class="primary">重建任务</button>
+              </td>
+            </tr>
+            <tr>
+              <td>TSK-20260119-033</td>
+              <td>大账户 2 / L</td>
+              <td>TSLA 251220 300.00 CALL</td>
+              <td><span class="status ready">一致</span></td>
+              <td><span class="status pending">处理中</span></td>
+              <td class="actions">
+                <button>查看进度</button>
+                <button>暂停</button>
+              </td>
+            </tr>
+            <tr>
+              <td>TSK-20260119-041</td>
+              <td>大账户 2 / S</td>
+              <td>TSLA 251220 280.00 PUT</td>
+              <td><span class="status blocked">break</span></td>
+              <td><span class="status blocked">异常</span></td>
+              <td class="actions">
+                <button>定位原因</button>
+                <button>删除任务</button>
+                <button class="primary">重建任务</button>
+              </td>
+            </tr>
+            <tr>
+              <td>TSK-20260119-058</td>
+              <td>大账户 3 / L</td>
+              <td>MSFT 260101 410.00 CALL</td>
+              <td><span class="status ready">一致</span></td>
+              <td><span class="status ready">可处理</span></td>
+              <td class="actions">
+                <button class="primary">开始处理</button>
+                <button>查看详情</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h3>异常定位与处置策略</h3>
+        <div class="insight-grid">
+          <div class="insight">
+            <strong>快速定位</strong>
+            <ul>
+              <li>优先聚焦 break 数量最高的维度。</li>
+              <li>对比上游账单、客户持仓的数量与交割信息。</li>
+              <li>定位缺失与差异的具体 option symbol。</li>
+            </ul>
+          </div>
+          <div class="insight">
+            <strong>处置方式</strong>
+            <ul>
+              <li>删除旧任务，确保避免重复执行。</li>
+              <li>按更新后的对账数据重新创建任务。</li>
+              <li>对账一致的任务可先行处理。</li>
+            </ul>
+          </div>
+          <div class="insight">
+            <strong>风险控制</strong>
+            <ul>
+              <li>异常任务触发二次复核提醒。</li>
+              <li>重建任务自动记录原因与操作者。</li>
+              <li>任务处理结果回写对账状态。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

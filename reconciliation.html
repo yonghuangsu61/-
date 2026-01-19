@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>对账页面</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-muted: #f1f4fb;
+        --text: #1c2333;
+        --muted: #5b667a;
+        --primary: #2f6fed;
+        --primary-strong: #2557b6;
+        --success: #1b7f5f;
+        --warning: #c26100;
+        --danger: #c43f3f;
+        --border: #d7deea;
+        --shadow: 0 12px 30px rgba(18, 28, 45, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      header nav a {
+        color: var(--muted);
+        text-decoration: none;
+        margin-right: 18px;
+        font-size: 14px;
+      }
+
+      header nav a:last-child {
+        margin-right: 0;
+      }
+
+      main {
+        padding: 24px 32px 60px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel h2 {
+        margin: 0 0 14px;
+        font-size: 16px;
+      }
+
+      .filter-group {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        font-size: 12px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      input[type="date"],
+      input[type="text"],
+      select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 13px;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .toggle-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
+      .chip-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        border: 1px solid var(--border);
+        background: var(--surface-muted);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .chip input {
+        margin-right: 6px;
+      }
+
+      .content {
+        display: grid;
+        gap: 20px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(180px, 1fr));
+        gap: 16px;
+      }
+
+      .summary-card {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .summary-card h3 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .summary-card strong {
+        font-size: 22px;
+      }
+
+      .summary-card .tag {
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        margin-left: 6px;
+        border: 1px solid transparent;
+      }
+
+      .tag.success {
+        color: var(--success);
+        border-color: #a8d8c7;
+        background: #e7f6ef;
+      }
+
+      .tag.warning {
+        color: var(--warning);
+        border-color: #f1d3b0;
+        background: #fff2e1;
+      }
+
+      .tag.danger {
+        color: var(--danger);
+        border-color: #f1b9b9;
+        background: #ffecec;
+      }
+
+      .view-switch {
+        display: flex;
+        gap: 10px;
+      }
+
+      .view-switch button {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .view-switch button.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+      }
+
+      .break-panel {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 16px;
+      }
+
+      .break-list {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .break-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+      }
+
+      .progress {
+        background: #e8edf7;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 10px;
+        margin-top: 8px;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #ff9f43, #ff6b6b);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        background: var(--surface-muted);
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .status {
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status.ok {
+        background: #e7f6ef;
+        color: var(--success);
+      }
+
+      .status.break {
+        background: #ffecec;
+        color: var(--danger);
+      }
+
+      .details-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .details-toolbar .toggle-row {
+        font-size: 13px;
+      }
+
+      .badge {
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      footer {
+        padding: 20px 32px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>对账页面</h1>
+        <nav>
+          <a href="./index.html">首页</a>
+          <a href="./tasks.html">任务处理</a>
+        </nav>
+      </div>
+      <div class="chip">当前数据：2026-01-19</div>
+    </header>
+
+    <main>
+      <aside class="panel">
+        <h2>查询与维度配置</h2>
+        <div class="filter-group">
+          <div>
+            <label for="date-start">对账日期</label>
+            <div class="toggle-row">
+              <input id="date-start" type="date" value="2026-01-19" />
+              <span>至</span>
+              <input id="date-end" type="date" value="2026-01-19" />
+            </div>
+          </div>
+          <div>
+            <label for="main-account">大账户</label>
+            <select id="main-account">
+              <option value="all">全部大账户</option>
+              <option>大账户 1</option>
+              <option>大账户 2</option>
+              <option>大账户 3</option>
+              <option>大账户 4</option>
+              <option>大账户 5</option>
+              <option>大账户 6</option>
+              <option>大账户 7</option>
+              <option>大账户 8</option>
+              <option>大账户 9</option>
+              <option>大账户 10</option>
+            </select>
+          </div>
+          <div>
+            <label for="sub-account">子账户</label>
+            <select id="sub-account">
+              <option value="all">全部子账户</option>
+              <option>大账户 1 - L</option>
+              <option>大账户 1 - S</option>
+              <option>大账户 2 - L</option>
+              <option>大账户 2 - S</option>
+            </select>
+          </div>
+          <div>
+            <label for="search-keyword">搜索关键词</label>
+            <input id="search-keyword" type="text" placeholder="输入 option symbol / series / chain" />
+          </div>
+          <div class="toggle-row">
+            <input id="break-only" type="checkbox" />
+            <label for="break-only">仅查看 break</label>
+          </div>
+        </div>
+
+        <h2>维度选择（可多选）</h2>
+        <div class="chip-grid">
+          <label class="chip"><input type="checkbox" checked />大账户</label>
+          <label class="chip"><input type="checkbox" checked />子账户(L/S)</label>
+          <label class="chip"><input type="checkbox" checked />到期期权</label>
+          <label class="chip"><input type="checkbox" />未到期期权</label>
+          <label class="chip"><input type="checkbox" />option series</label>
+          <label class="chip"><input type="checkbox" />option chain</label>
+          <label class="chip"><input type="checkbox" />option symbol</label>
+          <label class="chip"><input type="checkbox" />持仓类型</label>
+          <label class="chip"><input type="checkbox" />交割类型</label>
+          <label class="chip"><input type="checkbox" />交割物</label>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div class="summary-grid">
+          <article class="summary-card">
+            <h3>对账总数</h3>
+            <strong>12,840</strong>
+            <span class="tag success">+2.3% 今日</span>
+          </article>
+          <article class="summary-card">
+            <h3>一致数量</h3>
+            <strong>12,142</strong>
+            <span class="tag success">94.6%</span>
+          </article>
+          <article class="summary-card">
+            <h3>break 数量</h3>
+            <strong>698</strong>
+            <span class="tag danger">5.4%</span>
+          </article>
+          <article class="summary-card">
+            <h3>已定位 break</h3>
+            <strong>512</strong>
+            <span class="tag warning">完成率 73%</span>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="details-toolbar">
+            <div>
+              <h2>对账视图</h2>
+              <div class="badge">支持单维度 / 多维度叠加</div>
+            </div>
+            <div class="view-switch">
+              <button class="active" data-view="single">单维度</button>
+              <button data-view="multi">多维度叠加</button>
+            </div>
+          </div>
+
+          <div id="single-view">
+            <div class="toggle-row" style="margin-bottom: 10px;">
+              <label for="single-dim">查看维度</label>
+              <select id="single-dim" style="width: 220px;">
+                <option>大账户</option>
+                <option>子账户</option>
+                <option>到期期权</option>
+                <option>option series</option>
+                <option>option symbol</option>
+                <option>持仓类型</option>
+                <option>交割类型</option>
+              </select>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>维度值</th>
+                  <th>总数</th>
+                  <th>一致</th>
+                  <th>break</th>
+                  <th>break 占比</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>大账户 1</td>
+                  <td>2,480</td>
+                  <td>2,330</td>
+                  <td>150</td>
+                  <td>6.0%</td>
+                </tr>
+                <tr>
+                  <td>大账户 2</td>
+                  <td>2,175</td>
+                  <td>2,060</td>
+                  <td>115</td>
+                  <td>5.3%</td>
+                </tr>
+                <tr>
+                  <td>大账户 3</td>
+                  <td>1,980</td>
+                  <td>1,910</td>
+                  <td>70</td>
+                  <td>3.5%</td>
+                </tr>
+                <tr>
+                  <td>大账户 4</td>
+                  <td>1,620</td>
+                  <td>1,492</td>
+                  <td>128</td>
+                  <td>7.9%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="multi-view" class="hidden">
+            <div class="chip-grid" style="margin-bottom: 12px;">
+              <span class="chip">大账户</span>
+              <span class="chip">子账户(L/S)</span>
+              <span class="chip">option symbol</span>
+              <span class="chip">持仓类型</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>组合维度</th>
+                  <th>总数</th>
+                  <th>一致</th>
+                  <th>break</th>
+                  <th>break 占比</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>大账户 1 / L / AAPL 251226 127.00 CALL / long call</td>
+                  <td>340</td>
+                  <td>316</td>
+                  <td>24</td>
+                  <td>7.1%</td>
+                </tr>
+                <tr>
+                  <td>大账户 1 / S / AAPL 251226 120.00 PUT / short put</td>
+                  <td>280</td>
+                  <td>275</td>
+                  <td>5</td>
+                  <td>1.8%</td>
+                </tr>
+                <tr>
+                  <td>大账户 2 / L / TSLA 251220 300.00 CALL / long call</td>
+                  <td>260</td>
+                  <td>238</td>
+                  <td>22</td>
+                  <td>8.5%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel break-panel">
+          <div>
+            <h2>break 分析</h2>
+            <ul class="break-list">
+              <li>
+                <span>上游账单缺失</span>
+                <strong>210</strong>
+              </li>
+              <li>
+                <span>客户持仓缺失</span>
+                <strong>168</strong>
+              </li>
+              <li>
+                <span>数量不一致</span>
+                <strong>186</strong>
+              </li>
+              <li>
+                <span>价格不一致</span>
+                <strong>96</strong>
+              </li>
+              <li>
+                <span>交割类型不一致</span>
+                <strong>38</strong>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h2>break 分布趋势</h2>
+            <p style="margin: 0; color: var(--muted); font-size: 13px;">
+              今日 break 中 60% 来自上游账单与客户持仓缺口，建议优先排查数据同步链路。
+            </p>
+            <div class="progress"><span style="width: 60%"></span></div>
+            <div class="progress"><span style="width: 35%"></span></div>
+            <div class="progress"><span style="width: 20%"></span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="details-toolbar">
+            <div>
+              <h2>对账明细</h2>
+              <div class="badge">支持总数与明细</div>
+            </div>
+            <div class="toggle-row">
+              <input id="toggle-break" type="checkbox" />
+              <label for="toggle-break">仅显示 break</label>
+            </div>
+          </div>
+          <table id="detail-table">
+            <thead>
+              <tr>
+                <th>大账户</th>
+                <th>子账户</th>
+                <th>option series</th>
+                <th>option symbol</th>
+                <th>持仓类型</th>
+                <th>交割类型</th>
+                <th>交割物</th>
+                <th>上游数量</th>
+                <th>持仓数量</th>
+                <th>差异</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-status="ok">
+                <td>大账户 1</td>
+                <td>L</td>
+                <td>AAPL 251226</td>
+                <td>AAPL 251226 127.00 CALL</td>
+                <td>long call</td>
+                <td>exercise</td>
+                <td>cash</td>
+                <td>120</td>
+                <td>120</td>
+                <td>0</td>
+                <td><span class="status ok">一致</span></td>
+              </tr>
+              <tr data-status="break">
+                <td>大账户 1</td>
+                <td>S</td>
+                <td>AAPL 251226</td>
+                <td>AAPL 251226 120.00 PUT</td>
+                <td>short put</td>
+                <td>expiration</td>
+                <td>cash</td>
+                <td>80</td>
+                <td>72</td>
+                <td>-8</td>
+                <td><span class="status break">break</span></td>
+              </tr>
+              <tr data-status="ok">
+                <td>大账户 2</td>
+                <td>L</td>
+                <td>TSLA 251220</td>
+                <td>TSLA 251220 300.00 CALL</td>
+                <td>long call</td>
+                <td>exercise</td>
+                <td>physical 买入 (312.5 x 50)</td>
+                <td>50</td>
+                <td>50</td>
+                <td>0</td>
+                <td><span class="status ok">一致</span></td>
+              </tr>
+              <tr data-status="break">
+                <td>大账户 2</td>
+                <td>S</td>
+                <td>TSLA 251220</td>
+                <td>TSLA 251220 280.00 PUT</td>
+                <td>short put</td>
+                <td>assignment</td>
+                <td>physical 卖出 (279.4 x 60)</td>
+                <td>60</td>
+                <td>65</td>
+                <td>+5</td>
+                <td><span class="status break">break</span></td>
+              </tr>
+              <tr data-status="ok">
+                <td>大账户 3</td>
+                <td>L</td>
+                <td>MSFT 260101</td>
+                <td>MSFT 260101 410.00 CALL</td>
+                <td>long call</td>
+                <td>exercise</td>
+                <td>cash</td>
+                <td>40</td>
+                <td>40</td>
+                <td>0</td>
+                <td><span class="status ok">一致</span></td>
+              </tr>
+              <tr data-status="break">
+                <td>大账户 4</td>
+                <td>L</td>
+                <td>NVDA 251130</td>
+                <td>NVDA 251130 560.00 CALL</td>
+                <td>long call</td>
+                <td>exercise</td>
+                <td>cash</td>
+                <td>30</td>
+                <td>28</td>
+                <td>-2</td>
+                <td><span class="status break">break</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <footer>提示：默认展示当日对账结果，可在左侧搜索历史记录。</footer>
+
+    <script>
+      const viewButtons = document.querySelectorAll(".view-switch button");
+      const singleView = document.getElementById("single-view");
+      const multiView = document.getElementById("multi-view");
+      const breakToggle = document.getElementById("toggle-break");
+      const breakOnlySide = document.getElementById("break-only");
+      const rows = Array.from(document.querySelectorAll("#detail-table tbody tr"));
+
+      viewButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          viewButtons.forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+          const view = button.dataset.view;
+          singleView.classList.toggle("hidden", view !== "single");
+          multiView.classList.toggle("hidden", view !== "multi");
+        });
+      });
+
+      function applyBreakFilter() {
+        const isBreakOnly = breakToggle.checked || breakOnlySide.checked;
+        rows.forEach((row) => {
+          const isBreak = row.dataset.status === "break";
+          row.classList.toggle("hidden", isBreakOnly && !isBreak);
+        });
+      }
+
+      breakToggle.addEventListener("change", applyBreakFilter);
+      breakOnlySide.addEventListener("change", applyBreakFilter);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>对账后台系统 - 页面入口</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --surface-muted: #f0f3fa;
+        --text: #1c2333;
+        --muted: #5b667a;
+        --primary: #2f6fed;
+        --primary-strong: #2557b6;
+        --success: #1b7f5f;
+        --warning: #c26100;
+        --danger: #c43f3f;
+        --border: #d7deea;
+        --shadow: 0 10px 30px rgba(18, 28, 45, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      header .meta {
+        display: flex;
+        gap: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 32px auto 60px;
+        padding: 0 40px;
+      }
+
+      .hero {
+        background: var(--surface);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: var(--shadow);
+        display: grid;
+        gap: 24px;
+      }
+
+      .hero h2 {
+        margin: 0;
+        font-size: 26px;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        margin-top: 28px;
+      }
+
+      .card {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .card a {
+        margin-top: auto;
+        text-decoration: none;
+        color: #fff;
+        background: var(--primary);
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .card a:hover {
+        background: var(--primary-strong);
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        background: var(--surface-muted);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>对账后台系统</h1>
+      <div class="meta">
+        <span>今日：2026-01-19</span>
+        <span>环境：生产</span>
+        <span>数据状态：实时</span>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <div>
+          <h2>可视化对账 + 任务处理闭环</h2>
+          <p>
+            面向大量数据对账核查的后台系统，支持多维对账、break
+            分析、异常定位与任务处理，确保业务人员快速发现风险并高效处置。
+          </p>
+        </div>
+        <div class="pill-row">
+          <span class="pill">维度叠加对账</span>
+          <span class="pill">break 追踪</span>
+          <span class="pill">异常定位</span>
+          <span class="pill">任务重建</span>
+          <span class="pill">一致任务优先处理</span>
+        </div>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <h3>对账页面</h3>
+          <p>
+            支持单维度 / 多维度叠加的对账结果展示，提供总览、明细、break
+            分析与历史查询。
+          </p>
+          <a href="./reconciliation.html">进入对账页面</a>
+        </article>
+        <article class="card">
+          <h3>任务处理情况</h3>
+          <p>
+            根据对账一致性自动判断任务是否可处理，支持异常定位、删除旧任务、重建任务与并行处理。
+          </p>
+          <a href="./tasks.html">进入任务处理</a>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
