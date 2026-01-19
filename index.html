@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>清算对账后台 - 总览</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #2563eb;
+        --primary-soft: #e0e7ff;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border: #e2e8f0;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 28px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav a {
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: #cbd5f5;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .nav a.active,
+      .nav a:hover {
+        background: rgba(148, 163, 184, 0.2);
+        color: #ffffff;
+      }
+
+      .badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg);
+        padding: 10px 14px;
+        border-radius: 999px;
+        min-width: 320px;
+        color: var(--muted);
+      }
+
+      .topbar .actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .main {
+        padding: 28px 32px 48px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .hero {
+        background: linear-gradient(120deg, #1d4ed8, #4f46e5);
+        color: #ffffff;
+        padding: 28px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .hero p {
+        margin: 0;
+        opacity: 0.8;
+      }
+
+      .hero .quick-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .button {
+        background: #ffffff;
+        color: #1d4ed8;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .button.outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        color: #ffffff;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 18px 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+      }
+
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .card .value {
+        font-size: 26px;
+        font-weight: 700;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .tag {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .tag.success {
+        background: rgba(22, 163, 74, 0.15);
+        color: var(--success);
+      }
+
+      .tag.warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+      }
+
+      .tag.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      .progress {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+      }
+
+      .bar {
+        flex: 1;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div>
+          <div class="logo">Recon Ops</div>
+          <p class="muted">清算对账后台</p>
+        </div>
+        <nav class="nav">
+          <a class="active" href="index.html">总览</a>
+          <a href="reconciliation.html">对账中心 <span class="badge">10</span></a>
+          <a href="tasks.html">任务处理 <span class="badge">5</span></a>
+          <a href="#">规则与配置</a>
+          <a href="#">审计日志</a>
+        </nav>
+        <div class="muted">
+          <div>今日对账批次</div>
+          <strong>2026-01-19</strong>
+        </div>
+      </aside>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="search">🔍 搜索账户 / 期权 / 任务</div>
+          <div class="actions">
+            <span>09:30 ~ 18:00</span>
+            <span>业务组 · 王蕾</span>
+          </div>
+        </header>
+
+        <main class="main">
+          <section class="hero">
+            <div>
+              <h1>对账集中监控</h1>
+              <p>默认展示今日对账结果，支持历史追溯与多维度穿透。</p>
+            </div>
+            <div class="quick-actions">
+              <a class="button" href="reconciliation.html">进入对账中心</a>
+              <a class="button outline" href="tasks.html">查看任务处理</a>
+            </div>
+          </section>
+
+          <section class="stats">
+            <div class="card">
+              <h3>今日对账总量</h3>
+              <div class="value">128,450</div>
+              <div class="muted">上游账单 & 客户持仓</div>
+            </div>
+            <div class="card">
+              <h3>Break 数量</h3>
+              <div class="value">1,240</div>
+              <div class="muted">Break 占比 0.97%</div>
+            </div>
+            <div class="card">
+              <h3>可处理任务</h3>
+              <div class="value">320</div>
+              <div class="muted">对账一致即可处理</div>
+            </div>
+            <div class="card">
+              <h3>异常任务</h3>
+              <div class="value">88</div>
+              <div class="muted">需定位原因后重建</div>
+            </div>
+          </section>
+
+          <section class="grid-2">
+            <div class="card">
+              <h3>异常定位线索</h3>
+              <ul class="list">
+                <li>
+                  AAPL 251226 127.00 CALL
+                  <span class="tag danger">数量不一致</span>
+                </li>
+                <li>
+                  大账户 3 / 子账户 L
+                  <span class="tag warning">价格偏差</span>
+                </li>
+                <li>
+                  交割类型：assignment
+                  <span class="tag danger">交割物不一致</span>
+                </li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>任务处理情况</h3>
+              <ul class="list">
+                <li>待处理批次 <span class="tag success">可处理 18</span></li>
+                <li>需复核批次 <span class="tag warning">异常 7</span></li>
+                <li>处理中任务 <span class="tag success">执行 12</span></li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="card">
+            <h3>今日对账进度</h3>
+            <div class="progress">
+              <div class="progress-row">
+                <span>已完成校验</span>
+                <div class="bar"><span style="width: 82%; background: var(--primary)"></span></div>
+                <span class="muted">82%</span>
+              </div>
+              <div class="progress-row">
+                <span>Break 定位</span>
+                <div class="bar"><span style="width: 54%; background: var(--warning)"></span></div>
+                <span class="muted">54%</span>
+              </div>
+              <div class="progress-row">
+                <span>任务执行</span>
+                <div class="bar"><span style="width: 36%; background: var(--success)"></span></div>
+                <span class="muted">36%</span>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
