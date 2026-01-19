@@ -678,16 +678,16 @@
                 <h3>异常定位线索</h3>
                 <ul class="list">
                   <li>
-                    AAPL 251226 127.00 CALL
-                    <span class="tag danger">数量不一致</span>
+                    AAPL 260116 CALL 190
+                    <span class="tag danger">行权张数不一致</span>
                   </li>
                   <li>
-                    大账户 3 / 子账户 L
-                    <span class="tag warning">价格偏差</span>
+                    6001019S
+                    <span class="tag warning">交割金额偏差</span>
                   </li>
                   <li>
-                    交割类型：assignment
-                    <span class="tag danger">交割物不一致</span>
+                    行权类型：assignment
+                    <span class="tag danger">交割方向不一致</span>
                   </li>
                 </ul>
               </div>
@@ -749,73 +749,69 @@
                   大账户
                   <select>
                     <option>全部</option>
-                    <option>大账户 1</option>
-                    <option>大账户 2</option>
-                    <option>大账户 3</option>
-                    <option>大账户 4</option>
-                    <option>大账户 5</option>
-                    <option>大账户 6</option>
-                    <option>大账户 7</option>
-                    <option>大账户 8</option>
-                    <option>大账户 9</option>
-                    <option>大账户 10</option>
+                    <option>6001019S</option>
+                    <option>6001019L</option>
+                    <option>6001043L</option>
+                    <option>6001043S</option>
+                    <option>6001017L</option>
+                    <option>6001017S</option>
                   </select>
                 </label>
                 <label class="field">
-                  子账户（L / S）
-                  <select>
-                    <option>全部</option>
-                    <option>子账户 L</option>
-                    <option>子账户 S</option>
-                  </select>
-                </label>
-                <label class="field">
-                  期权状态
-                  <select>
-                    <option>全部</option>
-                    <option>未到期期权</option>
-                    <option>到期期权</option>
-                  </select>
-                </label>
-                <label class="field">
-                  Option Series / Chain
-                  <input type="text" placeholder="输入 series 或 chain" />
+                  Option Chain
+                  <input type="text" placeholder="例如 AAPL" />
                 </label>
                 <label class="field">
                   Option Symbol
-                  <input type="text" placeholder="例如 AAPL 251226 127.00 CALL" />
+                  <input type="text" placeholder="例如 AAPL 260116 CALL 190" />
                 </label>
                 <label class="field">
-                  持仓类型
+                  到期状态
                   <select>
                     <option>全部</option>
-                    <option>long call</option>
-                    <option>long put</option>
-                    <option>short call</option>
-                    <option>short put</option>
+                    <option>未到期</option>
+                    <option>已到期</option>
                   </select>
                 </label>
                 <label class="field">
-                  交割类型
+                  期权类型（Call / Put）
+                  <select>
+                    <option>全部</option>
+                    <option>CALL</option>
+                    <option>PUT</option>
+                  </select>
+                </label>
+                <label class="field">
+                  行权价
+                  <input type="text" placeholder="例如 190 或 200" />
+                </label>
+                <label class="field">
+                  行权类型
                   <select>
                     <option>全部</option>
                     <option>exercise</option>
-                    <option>expiration</option>
                     <option>assignment</option>
+                    <option>expiration</option>
                   </select>
                 </label>
                 <label class="field">
-                  交割物类型
+                  行权张数
+                  <input type="text" placeholder="例如 100 或 50-200" />
+                </label>
+                <label class="field">
+                  交割方式
                   <select>
                     <option>全部</option>
                     <option>cash</option>
-                    <option>physical - 买入</option>
-                    <option>physical - 卖出</option>
+                    <option>physical - 行权买入</option>
+                    <option>physical - 行权卖出</option>
+                    <option>physical - 指派买入</option>
+                    <option>physical - 指派卖出</option>
                   </select>
                 </label>
                 <label class="field">
-                  physical 价格 / 数量
-                  <input type="text" placeholder="例如 127.5 / 200" />
+                  交割数量 / 金额
+                  <input type="text" placeholder="例如 100 / 19,000" />
                 </label>
               </div>
               <div class="filter-actions">
@@ -836,14 +832,16 @@
               <h3>对账维度选择</h3>
               <div class="chips">
                 <span class="chip active">大账户</span>
-                <span class="chip active">子账户</span>
-                <span class="chip active">到期状态</span>
-                <span class="chip">Option Series</span>
-                <span class="chip">Option Chain</span>
+                <span class="chip active">Option Chain</span>
                 <span class="chip active">Option Symbol</span>
-                <span class="chip">持仓类型</span>
-                <span class="chip">交割类型</span>
-                <span class="chip">交割物</span>
+                <span class="chip active">到期状态</span>
+                <span class="chip active">期权类型（Call/Put）</span>
+                <span class="chip">行权价</span>
+                <span class="chip">行权类型</span>
+                <span class="chip">行权张数</span>
+                <span class="chip">交割方式</span>
+                <span class="chip">交割数量</span>
+                <span class="chip">交割金额</span>
               </div>
             </div>
 
@@ -866,16 +864,19 @@
                   </div>
                   <div class="chips">
                     <span class="chip">大账户</span>
-                    <span class="chip">子账户（L/S）</span>
-                    <span class="chip">到期状态</span>
-                    <span class="chip">Option Series</span>
                     <span class="chip">Option Chain</span>
                     <span class="chip">Option Symbol</span>
-                    <span class="chip">持仓类型</span>
-                    <span class="chip">交割类型</span>
-                    <span class="chip">交割物</span>
-                    <span class="chip">physical 价格</span>
-                    <span class="chip">physical 数量</span>
+                    <span class="chip">到期状态</span>
+                    <span class="chip">期权类型（Call/Put）</span>
+                    <span class="chip">行权价</span>
+                    <span class="chip">行权类型</span>
+                    <span class="chip">交割方式</span>
+                    <span class="chip">行权张数</span>
+                    <span class="chip">交割买入数量</span>
+                    <span class="chip">交割买入金额</span>
+                    <span class="chip">交割卖出数量</span>
+                    <span class="chip">交割卖出金额</span>
+                    <span class="chip">现金交割金额</span>
                   </div>
                 </div>
                 <div class="pivot-zones">
@@ -883,30 +884,31 @@
                     <strong>行</strong>
                     <div class="pivot-slot">
                       <span class="chip">大账户</span>
-                      <span class="chip">子账户</span>
+                      <span class="chip">Option Symbol</span>
                       <span class="chip">到期状态</span>
                     </div>
                   </div>
                   <div class="pivot-zone">
                     <strong>列</strong>
                     <div class="pivot-slot">
-                      <span class="chip">持仓类型</span>
-                      <span class="chip">交割类型</span>
+                      <span class="chip">期权类型</span>
+                      <span class="chip">行权类型</span>
                     </div>
                   </div>
                   <div class="pivot-zone">
                     <strong>筛选</strong>
                     <div class="pivot-slot">
-                      <span class="chip">Option Symbol</span>
-                      <span class="chip">Option Series</span>
+                      <span class="chip">Option Chain</span>
+                      <span class="chip">行权价</span>
                     </div>
                   </div>
                   <div class="pivot-zone">
                     <strong>值</strong>
                     <div class="pivot-slot">
-                      <span class="chip">上游数量</span>
-                      <span class="chip">客户持仓</span>
-                      <span class="chip">Break 数量</span>
+                      <span class="chip">行权张数</span>
+                      <span class="chip">交割买入金额</span>
+                      <span class="chip">交割卖出金额</span>
+                      <span class="chip">现金交割金额</span>
                     </div>
                   </div>
                 </div>
@@ -916,33 +918,41 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>行：大账户 / 子账户 / 到期状态</th>
-                      <th>列：持仓类型 / 交割类型</th>
-                      <th>上游数量</th>
-                      <th>客户持仓</th>
-                      <th>Break</th>
+                      <th>行：大账户 / Option Symbol / 到期状态</th>
+                      <th>列：期权类型 / 行权类型</th>
+                      <th>行权张数</th>
+                      <th>交割买入金额</th>
+                      <th>交割卖出金额</th>
+                      <th>现金交割金额</th>
+                      <th>结果</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>大账户 3 / L / 未到期</td>
-                      <td>long call / exercise</td>
-                      <td>1,200</td>
-                      <td>1,180</td>
+                      <td>6001019S / AAPL 260116 CALL 190 / 未到期</td>
+                      <td>CALL / exercise</td>
+                      <td>120</td>
+                      <td>19,000</td>
+                      <td>0</td>
+                      <td>0</td>
                       <td><span class="status-pill danger">Break</span></td>
                     </tr>
                     <tr>
-                      <td>大账户 3 / L / 未到期</td>
-                      <td>short put / expiration</td>
-                      <td>620</td>
-                      <td>620</td>
+                      <td>6001043L / AAPL 260116 PUT 190 / 已到期</td>
+                      <td>PUT / expiration</td>
+                      <td>80</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
                       <td><span class="status-pill success">正常</span></td>
                     </tr>
                     <tr>
-                      <td>大账户 6 / S / 到期</td>
-                      <td>short call / assignment</td>
-                      <td>320</td>
-                      <td>300</td>
+                      <td>6001017S / AAPL 260130 CALL 200 / 未到期</td>
+                      <td>CALL / assignment</td>
+                      <td>64</td>
+                      <td>0</td>
+                      <td>12,800</td>
+                      <td>0</td>
                       <td><span class="status-pill danger">Break</span></td>
                     </tr>
                   </tbody>
@@ -995,26 +1005,26 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <td>大账户 3 / 子账户 L / 未到期</td>
-                      <td>12,450</td>
-                      <td>180</td>
+                      <td>6001019S / AAPL / CALL 190</td>
+                      <td>3,420</td>
+                      <td>96</td>
                       <td><span class="status-pill danger">Break</span></td>
                     </tr>
                     <tr>
-                      <td>大账户 6 / 子账户 S / 到期</td>
-                      <td>9,875</td>
-                      <td>32</td>
+                      <td>6001043L / AAPL / PUT 190</td>
+                      <td>2,180</td>
+                      <td>18</td>
                       <td><span class="status-pill warning">需复核</span></td>
                     </tr>
                     <tr>
-                      <td>大账户 1 / 子账户 L / 未到期</td>
-                      <td>14,212</td>
+                      <td>6001017L / AAPL / CALL 200</td>
+                      <td>4,050</td>
                       <td>0</td>
                       <td><span class="status-pill success">正常</span></td>
                     </tr>
                     <tr>
-                      <td>大账户 9 / 子账户 S / 未到期</td>
-                      <td>8,940</td>
+                      <td>6001043S / AAPL / PUT 200</td>
+                      <td>1,980</td>
                       <td>12</td>
                       <td><span class="status-pill warning">需复核</span></td>
                     </tr>
@@ -1027,7 +1037,7 @@
                 <div class="break-reason">
                   <div class="break-item">
                     <div>
-                      数量不一致
+                      行权张数不一致
                       <div class="density">
                         <div class="density-bar"><span style="width: 68%"></span></div>
                         68%
@@ -1037,7 +1047,7 @@
                   </div>
                   <div class="break-item">
                     <div>
-                      价格偏差
+                      交割金额偏差
                       <div class="density">
                         <div class="density-bar"><span style="width: 21%"></span></div>
                         21%
@@ -1047,7 +1057,7 @@
                   </div>
                   <div class="break-item">
                     <div>
-                      交割物不一致
+                      交割方向不一致
                       <div class="density">
                         <div class="density-bar"><span style="width: 11%"></span></div>
                         11%
@@ -1064,55 +1074,60 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th>大账户 / 子账户</th>
+                    <th>大账户</th>
                     <th>Option Symbol</th>
-                    <th>持仓类型</th>
-                    <th>交割类型</th>
-                    <th>交割物</th>
-                    <th>上游数量</th>
-                    <th>客户持仓</th>
+                    <th>行权类型</th>
+                    <th>行权张数（上游/客户）</th>
+                    <th>交割方式</th>
+                    <th>买入数量 / 金额</th>
+                    <th>卖出数量 / 金额</th>
+                    <th>现金交割金额</th>
                     <th>结果</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>大账户 3 / L</td>
-                    <td>AAPL 251226 127.00 CALL</td>
-                    <td>long call</td>
+                    <td>6001019S</td>
+                    <td>AAPL 260116 CALL 190</td>
                     <td>exercise</td>
-                    <td>cash</td>
-                    <td>1,200</td>
-                    <td>1,180</td>
+                    <td>120 / 118</td>
+                    <td>physical - 行权买入</td>
+                    <td>100 / 19,000</td>
+                    <td>-</td>
+                    <td>0</td>
                     <td><span class="status-pill danger">Break</span></td>
                   </tr>
                   <tr>
-                    <td>大账户 3 / L</td>
-                    <td>TSLA 260621 220.00 PUT</td>
-                    <td>short put</td>
+                    <td>6001043L</td>
+                    <td>AAPL 260116 PUT 190</td>
                     <td>expiration</td>
+                    <td>80 / 80</td>
                     <td>cash</td>
-                    <td>620</td>
-                    <td>620</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>12,000</td>
                     <td><span class="status-pill success">正常</span></td>
                   </tr>
                   <tr>
-                    <td>大账户 6 / S</td>
-                    <td>NVDA 260930 500.00 CALL</td>
-                    <td>short call</td>
+                    <td>6001017S</td>
+                    <td>AAPL 260130 CALL 200</td>
                     <td>assignment</td>
-                    <td>physical - 买入</td>
-                    <td>320</td>
-                    <td>300</td>
+                    <td>64 / 60</td>
+                    <td>physical - 指派卖出</td>
+                    <td>-</td>
+                    <td>64 / 12,800</td>
+                    <td>0</td>
                     <td><span class="status-pill danger">Break</span></td>
                   </tr>
                   <tr>
-                    <td>大账户 1 / L</td>
-                    <td>MSFT 260121 210.00 CALL</td>
-                    <td>long call</td>
+                    <td>6001017L</td>
+                    <td>AAPL 260116 CALL 200</td>
                     <td>exercise</td>
-                    <td>physical - 卖出</td>
-                    <td>500</td>
-                    <td>500</td>
+                    <td>50 / 50</td>
+                    <td>physical - 行权买入</td>
+                    <td>50 / 10,000</td>
+                    <td>-</td>
+                    <td>0</td>
                     <td><span class="status-pill success">正常</span></td>
                   </tr>
                 </tbody>
@@ -1176,14 +1191,17 @@
                   大账户
                   <select>
                     <option>全部</option>
-                    <option>大账户 1</option>
-                    <option>大账户 3</option>
-                    <option>大账户 6</option>
+                    <option>6001019S</option>
+                    <option>6001019L</option>
+                    <option>6001043L</option>
+                    <option>6001043S</option>
+                    <option>6001017L</option>
+                    <option>6001017S</option>
                   </select>
                 </label>
                 <label class="field">
                   Option Symbol
-                  <input type="text" placeholder="例如 AAPL 251226 127.00 CALL" />
+                  <input type="text" placeholder="例如 AAPL 260116 CALL 190" />
                 </label>
                 <label class="field">
                   排序方式
@@ -1217,32 +1235,32 @@
                   <tbody>
                     <tr>
                       <td>T-20260119-023</td>
-                      <td>大账户 3 / L</td>
-                      <td>AAPL 251226 127.00 CALL</td>
+                    <td>6001019S</td>
+                    <td>AAPL 260116 CALL 190</td>
                       <td><span class="status-pill danger">异常</span></td>
                       <td>10:24</td>
                       <td><button class="button secondary">定位原因</button></td>
                     </tr>
                     <tr>
                       <td>T-20260119-041</td>
-                      <td>大账户 6 / S</td>
-                      <td>NVDA 260930 500.00 CALL</td>
+                    <td>6001043L</td>
+                    <td>AAPL 260116 PUT 190</td>
                       <td><span class="status-pill warning">需复核</span></td>
                       <td>10:10</td>
                       <td><button class="button secondary">查看差异</button></td>
                     </tr>
                     <tr>
                       <td>T-20260119-078</td>
-                      <td>大账户 1 / L</td>
-                      <td>MSFT 260121 210.00 CALL</td>
+                    <td>6001017L</td>
+                    <td>AAPL 260116 CALL 200</td>
                       <td><span class="status-pill success">可处理</span></td>
                       <td>09:58</td>
                       <td><button class="button">立即处理</button></td>
                     </tr>
                     <tr>
                       <td>T-20260119-102</td>
-                      <td>大账户 9 / S</td>
-                      <td>TSLA 260621 220.00 PUT</td>
+                    <td>6001043S</td>
+                    <td>AAPL 260130 CALL 200</td>
                       <td><span class="status-pill success">可处理</span></td>
                       <td>09:45</td>
                       <td><button class="button">立即处理</button></td>
