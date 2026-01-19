@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>清算对账后台 - 全量页面</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #2563eb;
+        --primary-soft: #e0e7ff;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border: #e2e8f0;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 240px;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 28px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .nav {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .nav a {
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: #cbd5f5;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .nav a.active,
+      .nav a:hover {
+        background: rgba(148, 163, 184, 0.2);
+        color: #ffffff;
+      }
+
+      .badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 32px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg);
+        padding: 10px 14px;
+        border-radius: 999px;
+        min-width: 320px;
+        color: var(--muted);
+      }
+
+      .topbar .actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .main {
+        padding: 28px 32px 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+      }
+
+      .section {
+        scroll-margin-top: 110px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .section-subtitle {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .hero {
+        background: linear-gradient(120deg, #1d4ed8, #4f46e5);
+        color: #ffffff;
+        padding: 28px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow);
+      }
+
+      .hero h2 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .hero p {
+        margin: 0;
+        opacity: 0.85;
+      }
+
+      .hero .quick-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .button {
+        background: var(--primary);
+        color: #ffffff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .button.secondary {
+        background: #f1f5f9;
+        color: var(--text);
+      }
+
+      .button.outline {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        color: #ffffff;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 18px 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .card .value {
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .tag {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .tag.success {
+        background: rgba(22, 163, 74, 0.15);
+        color: var(--success);
+      }
+
+      .tag.warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+      }
+
+      .tag.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      .progress {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+      }
+
+      .bar {
+        flex: 1;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 14px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .field input,
+      .field select {
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #ffffff;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .segmented {
+        display: inline-flex;
+        background: #f1f5f9;
+        border-radius: 999px;
+        padding: 4px;
+        gap: 4px;
+      }
+
+      .segmented button {
+        border: none;
+        background: transparent;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-weight: 600;
+        color: var(--muted);
+        cursor: pointer;
+      }
+
+      .segmented button.active {
+        background: #ffffff;
+        color: var(--primary);
+        box-shadow: var(--shadow);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .chip {
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .chip.active {
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .pivot-builder {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .pivot-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .pivot-header h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .pivot-body {
+        display: grid;
+        grid-template-columns: minmax(260px, 320px) 1fr;
+        gap: 16px;
+      }
+
+      .pivot-dimensions {
+        background: #f8fafc;
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px dashed var(--border);
+      }
+
+      .pivot-dimensions h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .pivot-drag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .pivot-drag span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .pivot-dimensions .chip {
+        cursor: grab;
+      }
+
+      .pivot-zones {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .pivot-zone {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px dashed var(--border);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 100px;
+      }
+
+      .pivot-zone strong {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .pivot-slot {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pivot-slot .chip {
+        background: #eef2ff;
+        color: #4338ca;
+        font-weight: 600;
+      }
+
+      .pivot-preview {
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .table th,
+      .table td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .table th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .status-pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .status-pill.success {
+        background: rgba(22, 163, 74, 0.15);
+        color: var(--success);
+      }
+
+      .status-pill.danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+      }
+
+      .status-pill.warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: var(--warning);
+      }
+
+      .info-banner {
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        gap: 12px;
+      }
+
+      .info-banner.info {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .info-banner.success {
+        background: #ecfdf3;
+        color: #15803d;
+      }
+
+      .break-reason {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .break-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+      }
+
+      .break-item span {
+        color: var(--muted);
+      }
+
+      .density {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .density-bar {
+        width: 120px;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .density-bar span {
+        display: block;
+        height: 100%;
+        background: var(--danger);
+        border-radius: inherit;
+      }
+
+      .step-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .step-list li {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .highlight {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div>
+          <div class="logo">Recon Ops</div>
+          <p class="muted">清算对账后台</p>
+        </div>
+        <nav class="nav">
+          <a class="active" href="#overview">总览</a>
+          <a href="#reconciliation">对账中心 <span class="badge">10</span></a>
+          <a href="#tasks">任务处理 <span class="badge">5</span></a>
+          <a href="#">规则与配置</a>
+          <a href="#">审计日志</a>
+        </nav>
+        <div class="muted">
+          <div>默认对账日期</div>
+          <strong>2026-01-19</strong>
+        </div>
+      </aside>
+
+      <div class="content">
+        <header class="topbar">
+          <div class="search">🔍 搜索账户 / 期权 / 任务</div>
+          <div class="actions">
+            <span>09:30 ~ 18:00</span>
+            <span>业务组 · 王蕾</span>
+          </div>
+        </header>
+
+        <main class="main">
+          <section id="overview" class="section">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">总览</h2>
+                <p class="section-subtitle">默认展示今日对账结果，支持历史追溯与多维度穿透。</p>
+              </div>
+              <div class="hero quick-actions">
+                <a class="button" href="#reconciliation">进入对账中心</a>
+                <a class="button outline" href="#tasks">查看任务处理</a>
+              </div>
+            </div>
+
+            <div class="hero">
+              <div>
+                <h2>对账集中监控</h2>
+                <p>多维度对账结果与 Break 分析集中呈现，便于快速定位问题。</p>
+              </div>
+              <div class="quick-actions">
+                <button class="button">导出今日对账概览</button>
+                <button class="button outline">下载 Break 清单</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="card">
+                <h3>今日对账总量</h3>
+                <div class="value">128,450</div>
+                <div class="muted">上游账单 & 客户持仓</div>
+              </div>
+              <div class="card">
+                <h3>Break 数量</h3>
+                <div class="value">1,240</div>
+                <div class="muted">Break 占比 0.97%</div>
+              </div>
+              <div class="card">
+                <h3>可处理任务</h3>
+                <div class="value">320</div>
+                <div class="muted">对账一致即可处理</div>
+              </div>
+              <div class="card">
+                <h3>异常任务</h3>
+                <div class="value">88</div>
+                <div class="muted">需定位原因后重建</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3>异常定位线索</h3>
+                <ul class="list">
+                  <li>
+                    AAPL 260116 CALL 190
+                    <span class="tag danger">行权张数不一致</span>
+                  </li>
+                  <li>
+                    6001019S
+                    <span class="tag warning">交割金额偏差</span>
+                  </li>
+                  <li>
+                    行权类型：assignment
+                    <span class="tag danger">交割方向不一致</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="card">
+                <h3>任务处理情况</h3>
+                <ul class="list">
+                  <li>待处理批次 <span class="tag success">可处理 18</span></li>
+                  <li>需复核批次 <span class="tag warning">异常 7</span></li>
+                  <li>处理中任务 <span class="tag success">执行 12</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>今日对账进度</h3>
+              <div class="progress">
+                <div class="progress-row">
+                  <span>已完成校验</span>
+                  <div class="bar"><span style="width: 82%; background: var(--primary)"></span></div>
+                  <span class="muted">82%</span>
+                </div>
+                <div class="progress-row">
+                  <span>Break 定位</span>
+                  <div class="bar"><span style="width: 54%; background: var(--warning)"></span></div>
+                  <span class="muted">54%</span>
+                </div>
+                <div class="progress-row">
+                  <span>任务执行</span>
+                  <div class="bar"><span style="width: 36%; background: var(--success)"></span></div>
+                  <span class="muted">36%</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="reconciliation" class="section">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">对账中心</h2>
+                <p class="section-subtitle">支持单维度 / 多维度叠加、Break 视图与明细穿透。</p>
+              </div>
+              <div class="actions">
+                <button class="button secondary">保存筛选视图</button>
+                <button class="button">导出明细</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="filters">
+                <label class="field">
+                  对账日期（默认当天）
+                  <input type="date" value="2026-01-19" />
+                </label>
+                <label class="field">
+                  历史日期
+                  <input type="date" value="2026-01-18" />
+                </label>
+                <label class="field">
+                  大账户
+                  <select>
+                    <option>全部</option>
+                    <option>6001019S</option>
+                    <option>6001019L</option>
+                    <option>6001043L</option>
+                    <option>6001043S</option>
+                    <option>6001017L</option>
+                    <option>6001017S</option>
+                  </select>
+                </label>
+                <label class="field">
+                  Option Chain
+                  <input type="text" placeholder="例如 AAPL" />
+                </label>
+                <label class="field">
+                  Option Symbol
+                  <input type="text" placeholder="例如 AAPL 260116 CALL 190" />
+                </label>
+                <label class="field">
+                  到期状态
+                  <select>
+                    <option>全部</option>
+                    <option>未到期</option>
+                    <option>已到期</option>
+                  </select>
+                </label>
+                <label class="field">
+                  期权类型（Call / Put）
+                  <select>
+                    <option>全部</option>
+                    <option>CALL</option>
+                    <option>PUT</option>
+                  </select>
+                </label>
+                <label class="field">
+                  行权价
+                  <input type="text" placeholder="例如 190 或 200" />
+                </label>
+                <label class="field">
+                  行权类型
+                  <select>
+                    <option>全部</option>
+                    <option>exercise</option>
+                    <option>assignment</option>
+                    <option>expiration</option>
+                  </select>
+                </label>
+                <label class="field">
+                  行权张数
+                  <input type="text" placeholder="例如 100 或 50-200" />
+                </label>
+                <label class="field">
+                  交割方式
+                  <select>
+                    <option>全部</option>
+                    <option>cash</option>
+                    <option>physical - 行权买入</option>
+                    <option>physical - 行权卖出</option>
+                    <option>physical - 指派买入</option>
+                    <option>physical - 指派卖出</option>
+                  </select>
+                </label>
+                <label class="field">
+                  交割数量 / 金额
+                  <input type="text" placeholder="例如 100 / 19,000" />
+                </label>
+              </div>
+              <div class="filter-actions">
+                <button class="button">查询</button>
+                <button class="button secondary">重置</button>
+                <div class="segmented">
+                  <button class="active">多维度叠加</button>
+                  <button>单一维度</button>
+                </div>
+                <div class="segmented">
+                  <button class="active">查看全部</button>
+                  <button>仅 Break</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>对账维度选择</h3>
+              <div class="chips">
+                <span class="chip active">大账户</span>
+                <span class="chip active">Option Chain</span>
+                <span class="chip active">Option Symbol</span>
+                <span class="chip active">到期状态</span>
+                <span class="chip active">期权类型（Call/Put）</span>
+                <span class="chip">行权价</span>
+                <span class="chip">行权类型</span>
+                <span class="chip">行权张数</span>
+                <span class="chip">交割方式</span>
+                <span class="chip">交割数量</span>
+                <span class="chip">交割金额</span>
+              </div>
+            </div>
+
+            <div class="card pivot-builder">
+              <div class="pivot-header">
+                <div>
+                  <h3>透视对账配置（拖拉维度到行 / 列）</h3>
+                  <div class="muted">支持像 Excel 透视表一样自由组合维度，快速查看对账结果。</div>
+                </div>
+                <div class="segmented">
+                  <button class="active">透视视图</button>
+                  <button>明细视图</button>
+                </div>
+              </div>
+              <div class="pivot-body">
+                <div class="pivot-dimensions">
+                  <div class="pivot-drag">
+                    <strong>可用维度</strong>
+                    <span>拖动到右侧区域</span>
+                  </div>
+                  <div class="chips">
+                    <span class="chip">大账户</span>
+                    <span class="chip">Option Chain</span>
+                    <span class="chip">Option Symbol</span>
+                    <span class="chip">到期状态</span>
+                    <span class="chip">期权类型（Call/Put）</span>
+                    <span class="chip">行权价</span>
+                    <span class="chip">行权类型</span>
+                    <span class="chip">交割方式</span>
+                    <span class="chip">行权张数</span>
+                    <span class="chip">交割买入数量</span>
+                    <span class="chip">交割买入金额</span>
+                    <span class="chip">交割卖出数量</span>
+                    <span class="chip">交割卖出金额</span>
+                    <span class="chip">现金交割金额</span>
+                  </div>
+                </div>
+                <div class="pivot-zones">
+                  <div class="pivot-zone">
+                    <strong>行</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">大账户</span>
+                      <span class="chip">Option Symbol</span>
+                      <span class="chip">到期状态</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>列</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">期权类型</span>
+                      <span class="chip">行权类型</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>筛选</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">Option Chain</span>
+                      <span class="chip">行权价</span>
+                    </div>
+                  </div>
+                  <div class="pivot-zone">
+                    <strong>值</strong>
+                    <div class="pivot-slot">
+                      <span class="chip">行权张数</span>
+                      <span class="chip">交割买入金额</span>
+                      <span class="chip">交割卖出金额</span>
+                      <span class="chip">现金交割金额</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pivot-preview">
+                <h3>透视预览</h3>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>行：大账户 / Option Symbol / 到期状态</th>
+                      <th>列：期权类型 / 行权类型</th>
+                      <th>行权张数</th>
+                      <th>交割买入金额</th>
+                      <th>交割卖出金额</th>
+                      <th>现金交割金额</th>
+                      <th>结果</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>6001019S / AAPL 260116 CALL 190 / 未到期</td>
+                      <td>CALL / exercise</td>
+                      <td>120</td>
+                      <td>19,000</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td><span class="status-pill danger">Break</span></td>
+                    </tr>
+                    <tr>
+                      <td>6001043L / AAPL 260116 PUT 190 / 已到期</td>
+                      <td>PUT / expiration</td>
+                      <td>80</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td>0</td>
+                      <td><span class="status-pill success">正常</span></td>
+                    </tr>
+                    <tr>
+                      <td>6001017S / AAPL 260130 CALL 200 / 未到期</td>
+                      <td>CALL / assignment</td>
+                      <td>64</td>
+                      <td>0</td>
+                      <td>12,800</td>
+                      <td>0</td>
+                      <td><span class="status-pill danger">Break</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="info-banner info">
+              <div>支持任意维度查看总数与明细，可随时切换单维度或多维度叠加。</div>
+              <div class="segmented">
+                <button class="active">总览 + 明细</button>
+                <button>仅明细</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="card">
+                <h3>对账总量</h3>
+                <div class="value">128,450</div>
+                <div class="muted">包含正常 + Break</div>
+              </div>
+              <div class="card">
+                <h3>Break 数量</h3>
+                <div class="value">1,240</div>
+                <div class="muted">Break 占比 0.97%</div>
+              </div>
+              <div class="card">
+                <h3>上游账单合计</h3>
+                <div class="value">127,980</div>
+                <div class="muted">合约 & 交割</div>
+              </div>
+              <div class="card">
+                <h3>客户持仓合计</h3>
+                <div class="value">128,450</div>
+                <div class="muted">含待交割</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3>维度对账结果（叠加视图）</h3>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>维度组合</th>
+                      <th>总数</th>
+                      <th>Break</th>
+                      <th>状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>6001019S / AAPL / CALL 190</td>
+                      <td>3,420</td>
+                      <td>96</td>
+                      <td><span class="status-pill danger">Break</span></td>
+                    </tr>
+                    <tr>
+                      <td>6001043L / AAPL / PUT 190</td>
+                      <td>2,180</td>
+                      <td>18</td>
+                      <td><span class="status-pill warning">需复核</span></td>
+                    </tr>
+                    <tr>
+                      <td>6001017L / AAPL / CALL 200</td>
+                      <td>4,050</td>
+                      <td>0</td>
+                      <td><span class="status-pill success">正常</span></td>
+                    </tr>
+                    <tr>
+                      <td>6001043S / AAPL / PUT 200</td>
+                      <td>1,980</td>
+                      <td>12</td>
+                      <td><span class="status-pill warning">需复核</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="card">
+                <h3>Break 原因分析</h3>
+                <div class="break-reason">
+                  <div class="break-item">
+                    <div>
+                      行权张数不一致
+                      <div class="density">
+                        <div class="density-bar"><span style="width: 68%"></span></div>
+                        68%
+                      </div>
+                    </div>
+                    <span>842 笔</span>
+                  </div>
+                  <div class="break-item">
+                    <div>
+                      交割金额偏差
+                      <div class="density">
+                        <div class="density-bar"><span style="width: 21%"></span></div>
+                        21%
+                      </div>
+                    </div>
+                    <span>260 笔</span>
+                  </div>
+                  <div class="break-item">
+                    <div>
+                      交割方向不一致
+                      <div class="density">
+                        <div class="density-bar"><span style="width: 11%"></span></div>
+                        11%
+                      </div>
+                    </div>
+                    <span>138 笔</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>对账明细（可切换仅 Break）</h3>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>大账户</th>
+                    <th>Option Symbol</th>
+                    <th>行权类型</th>
+                    <th>行权张数（上游/客户）</th>
+                    <th>交割方式</th>
+                    <th>买入数量 / 金额</th>
+                    <th>卖出数量 / 金额</th>
+                    <th>现金交割金额</th>
+                    <th>结果</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>6001019S</td>
+                    <td>AAPL 260116 CALL 190</td>
+                    <td>exercise</td>
+                    <td>120 / 118</td>
+                    <td>physical - 行权买入</td>
+                    <td>100 / 19,000</td>
+                    <td>-</td>
+                    <td>0</td>
+                    <td><span class="status-pill danger">Break</span></td>
+                  </tr>
+                  <tr>
+                    <td>6001043L</td>
+                    <td>AAPL 260116 PUT 190</td>
+                    <td>expiration</td>
+                    <td>80 / 80</td>
+                    <td>cash</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>12,000</td>
+                    <td><span class="status-pill success">正常</span></td>
+                  </tr>
+                  <tr>
+                    <td>6001017S</td>
+                    <td>AAPL 260130 CALL 200</td>
+                    <td>assignment</td>
+                    <td>64 / 60</td>
+                    <td>physical - 指派卖出</td>
+                    <td>-</td>
+                    <td>64 / 12,800</td>
+                    <td>0</td>
+                    <td><span class="status-pill danger">Break</span></td>
+                  </tr>
+                  <tr>
+                    <td>6001017L</td>
+                    <td>AAPL 260116 CALL 200</td>
+                    <td>exercise</td>
+                    <td>50 / 50</td>
+                    <td>physical - 行权买入</td>
+                    <td>50 / 10,000</td>
+                    <td>-</td>
+                    <td>0</td>
+                    <td><span class="status-pill success">正常</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="tasks" class="section">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">任务处理</h2>
+                <p class="section-subtitle">对账一致即可处理，不一致则作为异常定位并重建任务。</p>
+              </div>
+              <div class="actions">
+                <button class="button secondary">导出任务</button>
+                <button class="button">批量处理可处理任务</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="card">
+                <h3>可处理任务</h3>
+                <div class="value">320</div>
+                <div class="muted">对账一致，不受异常影响</div>
+              </div>
+              <div class="card">
+                <h3>异常任务</h3>
+                <div class="value">88</div>
+                <div class="muted">需排查与重建</div>
+              </div>
+              <div class="card">
+                <h3>处理中</h3>
+                <div class="value">12</div>
+                <div class="muted">系统自动执行</div>
+              </div>
+              <div class="card">
+                <h3>已完成</h3>
+                <div class="value">1,840</div>
+                <div class="muted">含已交割与到期</div>
+              </div>
+            </div>
+
+            <div class="info-banner success">
+              <div>对账一致的任务可先行处理，异常任务不影响可处理任务流转。</div>
+              <button class="button">批量处理可处理任务</button>
+            </div>
+
+            <div class="card">
+              <div class="filters">
+                <label class="field">
+                  任务状态
+                  <select>
+                    <option>全部</option>
+                    <option>可处理</option>
+                    <option>异常</option>
+                    <option>处理中</option>
+                    <option>已完成</option>
+                  </select>
+                </label>
+                <label class="field">
+                  大账户
+                  <select>
+                    <option>全部</option>
+                    <option>6001019S</option>
+                    <option>6001019L</option>
+                    <option>6001043L</option>
+                    <option>6001043S</option>
+                    <option>6001017L</option>
+                    <option>6001017S</option>
+                  </select>
+                </label>
+                <label class="field">
+                  Option Symbol
+                  <input type="text" placeholder="例如 AAPL 260116 CALL 190" />
+                </label>
+                <label class="field">
+                  排序方式
+                  <select>
+                    <option>最新更新时间</option>
+                    <option>异常优先</option>
+                    <option>可处理优先</option>
+                  </select>
+                </label>
+              </div>
+              <div class="filter-actions">
+                <button class="button">查询</button>
+                <button class="button secondary">重置</button>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <h3>任务列表</h3>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>任务 ID</th>
+                      <th>账户</th>
+                      <th>Option Symbol</th>
+                      <th>状态</th>
+                      <th>更新时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>T-20260119-023</td>
+                    <td>6001019S</td>
+                    <td>AAPL 260116 CALL 190</td>
+                      <td><span class="status-pill danger">异常</span></td>
+                      <td>10:24</td>
+                      <td><button class="button secondary">定位原因</button></td>
+                    </tr>
+                    <tr>
+                      <td>T-20260119-041</td>
+                    <td>6001043L</td>
+                    <td>AAPL 260116 PUT 190</td>
+                      <td><span class="status-pill warning">需复核</span></td>
+                      <td>10:10</td>
+                      <td><button class="button secondary">查看差异</button></td>
+                    </tr>
+                    <tr>
+                      <td>T-20260119-078</td>
+                    <td>6001017L</td>
+                    <td>AAPL 260116 CALL 200</td>
+                      <td><span class="status-pill success">可处理</span></td>
+                      <td>09:58</td>
+                      <td><button class="button">立即处理</button></td>
+                    </tr>
+                    <tr>
+                      <td>T-20260119-102</td>
+                    <td>6001043S</td>
+                    <td>AAPL 260130 CALL 200</td>
+                      <td><span class="status-pill success">可处理</span></td>
+                      <td>09:45</td>
+                      <td><button class="button">立即处理</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="card">
+                <h3>异常定位与重建路径</h3>
+                <ul class="step-list">
+                  <li>1. 在对账中心定位 Break 原因，锁定维度组合。</li>
+                  <li>2. <span class="highlight">删除已有任务</span>，等待新数据刷新。</li>
+                  <li>3. 重新创建任务，确保对账一致后进入可处理状态。</li>
+                  <li>4. 任务可处理后执行交割或到期流程。</li>
+                </ul>
+                <div class="filter-actions">
+                  <button class="button">删除并重建任务</button>
+                  <button class="button secondary">跳转对账中心</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
